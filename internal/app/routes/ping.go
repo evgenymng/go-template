@@ -18,5 +18,5 @@ import (
 //
 //	@router		/ping [get]
 func GetPing(c *gin.Context) {
-    c.String(http.StatusOK, "pong")
+	c.String(http.StatusOK, "pong")
 }

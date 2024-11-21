@@ -13,7 +13,7 @@ const (
 	TagUnknown
 	// Lifecycle
 	TagStartup
-    TagRunning
+	TagRunning
 	TagShutdown
 	// Log
 	TagLogParsing
@@ -22,7 +22,8 @@ const (
 	TagResponse
 	TagMiddleware
 	// Integrations
-	TagDatabaseConnect
+	TagSqlConnect
+    TagSqlQuery
 	// Custom
 	// ...
 )

@@ -19,12 +19,9 @@ log:
     level_encoder: lowercase
     time_key: timestamp
     time_encoder: iso8601
-
-# Integrations...
-#
-# mongo:
-#   host: mongodb
-#   port: 80
-#   database_name: crawler_cache
-#   username: mongoadmin
-#   password: secret
+database:
+  name: postgres
+  username: postgres
+  postgres: postgres
+  host: host.docker.internal
+  port: 5432
