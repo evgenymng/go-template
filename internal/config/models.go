@@ -1,6 +1,7 @@
 package config
 
 type Config struct {
+    Version string `yaml:"version"`
 	ApiKeys     []string     `yaml:"api_keys"`
 	EnableDocs  bool         `yaml:"enable_docs"`
 	EnablePprof bool         `yaml:"enable_pprof"`

@@ -4,10 +4,17 @@ import (
 	"fmt"
 	"os"
 
+	"app/internal/app"
 	"app/internal/config"
 	"app/internal/log"
 )
 
+//	@title Backend Service
+//	@version
+
+//	@securityDefinitions.apikey	ApiKeyAuth
+//	@in							query
+//	@name						api_key
 func main() {
 	configFile, ok := os.LookupEnv("CONFIG_FILE")
 	if !ok {
@@ -26,4 +33,7 @@ func main() {
 		"Config is loaded, logger is initialized",
 		log.L().Tag(log.TagStartup),
 	)
+
+    app := app.New(cfg)
+    app.Launch()
 }

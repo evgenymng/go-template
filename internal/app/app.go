@@ -5,11 +5,11 @@ import (
 )
 
 type App struct {
-	config *config.Config
+	config config.Config
 }
 
-func New(config *config.Config) *App {
-	app := &App{config: config}
+func New(config config.Config) App {
+	app := App{config: config}
 
 	return app
 }

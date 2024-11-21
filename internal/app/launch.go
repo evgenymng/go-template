@@ -9,18 +9,21 @@ import (
 	"syscall"
 	"time"
 
+	"app/docs"
 	"app/internal/app/middleware"
-	"app/internal/config"
+	"app/internal/app/routes"
 	"app/internal/log"
 
 	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
+	swaggerfiles "github.com/swaggo/files"
+	ginswagger "github.com/swaggo/gin-swagger"
 )
 
-func (app *App) Launch(cfg config.Config) {
+func (app *App) Launch() {
 	l := log.L().Tag(log.TagStartup)
 
-	gin.SetMode(cfg.Server.Mode)
+	gin.SetMode(app.config.Server.Mode)
 
 	// server will run using this context
 	ctx, cancel := signal.NotifyContext(
@@ -48,17 +51,13 @@ func (app *App) Launch(cfg config.Config) {
 	)
 
 	// register handlers
-	r.GET("/ping", v1routes.GetPing)
-	r.GET("/version", v1routes.GetVersion)
-	r.GET("/delay", v1routes.GetDelay)
-	r.GET("/parse", v1routes.GetParse)
-	r.GET("/table", v1routes.GetTable)
+	r.GET("/ping", routes.GetPing)
 
 	if app.config.EnablePprof {
 		pprof.Register(r)
 	}
-	if config.C.EnableDocs {
-		v1docs.SwaggerInfo.Version = config.C.Version
+	if app.config.EnableDocs {
+		docs.SwaggerInfo.Version = app.config.Version
 		r.GET("/swagger/*any", ginswagger.WrapHandler(swaggerfiles.Handler))
 		r.GET("/docs", func(c *gin.Context) {
 			c.Redirect(http.StatusMovedPermanently, "/swagger/index.html")
@@ -79,26 +78,25 @@ func (app *App) Launch(cfg config.Config) {
 		Handler: r,
 	}
 	// setting onShutdown logic
-	srv.RegisterOnShutdown(onShutdown)
+	srv.RegisterOnShutdown(app.onShutdown)
 
 	// create listener
 	listener, err := net.Listen("tcp", fmt.Sprintf(
 		"%s:%d",
-		config.C.Server.Host,
-		config.C.Server.Port,
+		app.config.Server.Host,
+		app.config.Server.Port,
 	))
 	defer func() {
 		_ = listener.Close()
 	}()
 
 	l = l.Tag(log.TagRunning)
-
 	if err != nil {
 		log.S.Fatal("Failed to create listener", l.Error(err))
 	}
 
 	// perform startup logic
-	err = onStartup(ctx)
+	err = app.onStartup(ctx)
 
 	if err == nil {
 		// server runs in a goroutine
@@ -125,7 +123,7 @@ func (app *App) Launch(cfg config.Config) {
 		)
 		ctx, cancel = context.WithTimeout(
 			context.Background(),
-			time.Duration(config.C.Server.ShutdownTimeout)*time.Second,
+			time.Duration(app.config.Server.ShutdownTimeout)*time.Second,
 		)
 		defer cancel()
 	}

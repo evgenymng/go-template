@@ -13,6 +13,7 @@ const (
 	TagUnknown
 	// Lifecycle
 	TagStartup
+    TagRunning
 	TagShutdown
 	// Log
 	TagLogParsing
