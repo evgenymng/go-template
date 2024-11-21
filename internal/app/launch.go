@@ -2,8 +2,12 @@ package app
 
 import (
 	"context"
+	"fmt"
+	"net"
+	"net/http"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"app/internal/app/middleware"
 	"app/internal/config"
@@ -33,22 +37,22 @@ func (app *App) Launch(cfg config.Config) {
 		middleware.TraceIdMiddleware("X-Trace-ID"),
 		middleware.AccessLogMiddleware(),
 		middleware.ApiAuthMiddleware(
-        app.config.ApiKeys,
-            "Authorization",
-        []string{
-			"^/ping$",
-			"^/swagger/.*$",
-			"^/docs$",
-			"^/debug/pprof/.*$",
-		}),
+			app.config.ApiKeys,
+			"Authorization",
+			[]string{
+				"^/ping$",
+				"^/swagger/.*$",
+				"^/docs$",
+				"^/debug/pprof/.*$",
+			}),
 	)
 
 	// register handlers
-    r.GET("/ping", v1routes.GetPing)
-    r.GET("/version", v1routes.GetVersion)
-    r.GET("/delay", v1routes.GetDelay)
-    r.GET("/parse", v1routes.GetParse)
-    r.GET("/table", v1routes.GetTable)
+	r.GET("/ping", v1routes.GetPing)
+	r.GET("/version", v1routes.GetVersion)
+	r.GET("/delay", v1routes.GetDelay)
+	r.GET("/parse", v1routes.GetParse)
+	r.GET("/table", v1routes.GetTable)
 
 	if app.config.EnablePprof {
 		pprof.Register(r)

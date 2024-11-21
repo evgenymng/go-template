@@ -4,19 +4,19 @@ package errors
 type Code uint
 
 const (
-    CodeUnset Code = iota
-    CodeUnknown
-    // client
-    CodeBadInput
-    // server
-    CodeUnexpected
-    CodeUnauthorized
+	CodeUnset Code = iota
+	CodeUnknown
+	// client
+	CodeBadInput
+	// server
+	CodeUnexpected
+	CodeUnauthorized
 )
 
 var codeToString = map[Code]string{
-    CodeBadInput: "bad_input",
-    CodeUnexpected: "unexpected",
-    CodeUnauthorized: "unauthorized",
+	CodeBadInput:     "bad_input",
+	CodeUnexpected:   "unexpected",
+	CodeUnauthorized: "unauthorized",
 }
 
 // Implement [fmt.Stringer] interface.

@@ -11,28 +11,28 @@ type Tag uint
 const (
 	TagUnset Tag = iota
 	TagUnknown
-    // Lifecycle
+	// Lifecycle
 	TagStartup
-    TagShutdown
-    // Log
+	TagShutdown
+	// Log
 	TagLogParsing
-    // Request/response
+	// Request/response
 	TagRequest
 	TagResponse
-    TagMiddleware
-    // Integrations
+	TagMiddleware
+	// Integrations
 	TagDatabaseConnect
-    // Custom
-    // ...
+	// Custom
+	// ...
 )
 
 var tagToString = map[Tag]string{
-    TagUnknown: "unknown",
-	TagStartup:              "startup",
-    TagShutdown:             "shutdown",
-	TagLogParsing:           "log_parsing",
-	TagRequest:              "request",
-	TagResponse:             "response",
+	TagUnknown:    "unknown",
+	TagStartup:    "startup",
+	TagShutdown:   "shutdown",
+	TagLogParsing: "log_parsing",
+	TagRequest:    "request",
+	TagResponse:   "response",
 }
 
 // Implement [fmt.Stringer] interface.

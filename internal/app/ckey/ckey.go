@@ -5,5 +5,5 @@ package ckey
 type ContextKey string
 
 const (
-    TraceId ContextKey = "trace_id"
+	TraceId ContextKey = "trace_id"
 )

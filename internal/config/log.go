@@ -22,6 +22,6 @@ type LogConfig struct {
 	Encoding         string          `yaml:"encoding"`
 	OutputPaths      []string        `yaml:"output_paths"`
 	ErrorOutputPaths []string        `yaml:"error_output_paths"`
-	ShowFileLine          bool            `yaml:"show_file_line"`
+	ShowFileLine     bool            `yaml:"show_file_line"`
 	EncoderConfig    EncoderConfig   `yaml:"encoder_config"`
 }

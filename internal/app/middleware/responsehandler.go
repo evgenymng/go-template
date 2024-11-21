@@ -18,7 +18,7 @@ import (
 // the request processing.
 func ResponseHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
-        traceId := c.GetString(string(ckey.TraceId))
+		traceId := c.GetString(string(ckey.TraceId))
 
 		c.Next()
 
@@ -33,38 +33,38 @@ func ResponseHandler() gin.HandlerFunc {
 				if err.Type == gin.ErrorTypeBind {
 					log.S.Error("Request parameter binding error", l)
 					c.JSON(http.StatusUnprocessableEntity, errors.E().
-                        Code(errors.CodeBadInput).
-                        Message("Request parameter binding error").
-                        TraceId(traceId).
-                        Inner(err).
-                        Build(),
-                    )
+						Code(errors.CodeBadInput).
+						Message("Request parameter binding error").
+						TraceId(traceId).
+						Inner(err).
+						Build(),
+					)
 					return
 				}
 
 				if serr, ok := err.Err.(*errors.ServiceError); ok {
 					log.S.Warn("Service error", l)
-                    
-                    // NOTE(evgenymng): switch by code here, if needed
-                    switch serr.Code {
-                    case errors.CodeUnauthorized:
-                        c.JSON(http.StatusUnauthorized, serr)
-                    default:
-                        c.JSON(http.StatusInternalServerError, serr)
-                    }
-                    return
+
+					// NOTE(evgenymng): switch by code here, if needed
+					switch serr.Code {
+					case errors.CodeUnauthorized:
+						c.JSON(http.StatusUnauthorized, serr)
+					default:
+						c.JSON(http.StatusInternalServerError, serr)
+					}
+					return
 				}
 
-                log.S.Error("Unexpected error", l)
-                c.JSON(http.StatusInternalServerError, errors.E().
-                    Code(errors.CodeUnexpected).
-                    Message("Unexpected error").
-                    TraceId(traceId).
-                    Inner(err).
-                    Build(),
-                )
-                // NOTE(evgenymng): we do not expect more than one error
-                return
+				log.S.Error("Unexpected error", l)
+				c.JSON(http.StatusInternalServerError, errors.E().
+					Code(errors.CodeUnexpected).
+					Message("Unexpected error").
+					TraceId(traceId).
+					Inner(err).
+					Build(),
+				)
+				// NOTE(evgenymng): we do not expect more than one error
+				return
 			}
 		}
 	}

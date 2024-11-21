@@ -10,7 +10,7 @@ import (
 // Middleware to associate an ID with each incoming request.
 func TraceIdMiddleware(header string) gin.HandlerFunc {
 	return func(c *gin.Context) {
-        traceId := c.Request.Header.Get(header)
+		traceId := c.Request.Header.Get(header)
 		if len(traceId) == 0 {
 			newTraceId, _ := uuid.NewV7()
 			traceId = newTraceId.String()
