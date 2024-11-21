@@ -31,7 +31,7 @@ func main() {
 	log.S = log.New(cfg.Log)
 	log.S.Info(
 		"Config is loaded, logger is initialized",
-		log.L().Tag(log.TagStartup),
+		log.L(),
 	)
 
 	app := app.New(cfg)

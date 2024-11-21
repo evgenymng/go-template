@@ -17,6 +17,7 @@ var codeToString = map[Code]string{
 	CodeBadInput:     "bad_input",
 	CodeUnexpected:   "unexpected",
 	CodeUnauthorized: "unauthorized",
+	CodeUnknown:      "unknown",
 }
 
 // Implement [fmt.Stringer] interface.

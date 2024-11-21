@@ -23,7 +23,6 @@ func ResponseHandler() gin.HandlerFunc {
 		c.Next()
 
 		l := log.L().
-			Tag(log.TagResponse).
 			TraceId(traceId)
 
 		if len(c.Errors) > 0 {

@@ -21,7 +21,7 @@ import (
 )
 
 func (app *App) Launch() {
-	l := log.L().Tag(log.TagStartup)
+	l := log.L()
 
 	gin.SetMode(app.config.Server.Mode)
 

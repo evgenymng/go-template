@@ -14,30 +14,7 @@ const docTemplate = `{
     },
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
-    "paths": {
-        "/ping": {
-            "get": {
-                "consumes": [
-                    "text/plain"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "misc"
-                ],
-                "summary": "Ping the service",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        }
-    },
+    "paths": {},
     "securityDefinitions": {
         "ApiKeyAuth": {
             "type": "apiKey",

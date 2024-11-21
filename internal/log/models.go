@@ -17,11 +17,6 @@ func L() LogObject {
 	return LogObject{}
 }
 
-func (l LogObject) Tag(t Tag) LogObject {
-	l.tag = t
-	return l
-}
-
 func (l LogObject) Error(e error) LogObject {
 	l.error = e
 	return l
@@ -62,7 +57,7 @@ func (l LogObject) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 			if strKey, ok = l.data[i].(string); !ok {
 				S.Error(
 					"L's data array has a key that cannot be cast to string",
-					L().Tag(TagLogParsing),
+					L(),
 				)
 				continue
 			}
@@ -76,7 +71,7 @@ func (l LogObject) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	} else {
 		S.Error(
 			"L's data array isn't of even size, ignoring",
-			L().Tag(TagLogParsing),
+			L(),
 		)
 	}
 	return nil

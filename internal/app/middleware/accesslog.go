@@ -14,7 +14,7 @@ func AccessLogMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		traceId := c.GetString(string(ckey.TraceId))
 		startTime := time.Now()
-		l := log.L().Tag(log.TagRequest).TraceId(traceId).
+		l := log.L().TraceId(traceId).
 			Add("path", c.Request.URL.Path).
 			Add("params", c.Request.URL.Query()).
 			Add("host", c.Request.URL.Hostname())
@@ -23,7 +23,7 @@ func AccessLogMiddleware() gin.HandlerFunc {
 		c.Next()
 
 		status := c.Writer.Status()
-		l = l.Tag(log.TagResponse).
+		l = l.
 			Add("status_code", status).
 			Add("elapsed", time.Since(startTime).Seconds())
 		log.S.Info("Response sent", l)

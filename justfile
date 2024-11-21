@@ -10,7 +10,7 @@ lint:
 
 gen-docs:
     @swag init \
-        -d ./cmd/app,./internal \
+        -d ./cmd/app \
         --collectionFormat multi \
         --parseInternal \
         -o ./docs \
@@ -40,14 +40,14 @@ update-tag:
     echo "RELEASE=${release_date}:${git_hash}" | tee -a .env
 
 setup-hooks:
-    #!/bin/bash
+    #!/bin/sh
     if [ -f .git/hooks/post-merge ]; then
-        sed -i "/just update-tag/d" .git/hooks/post-merge
+        sed -i '' "/just update-tag/d" .git/hooks/post-merge
     fi
     echo "just update-tag" | tee -a .git/hooks/post-merge > /dev/null
 
     if [ -f .git/hooks/post-commit ]; then
-        sed -i "/just update-tag/d" .git/hooks/post-commit
+        sed -i '' "/just update-tag/d" .git/hooks/post-merge
     fi
     echo "just update-tag" | tee -a .git/hooks/post-commit > /dev/null
 

@@ -23,7 +23,7 @@ const (
 	TagMiddleware
 	// Integrations
 	TagSqlConnect
-    TagSqlQuery
+	TagSqlQuery
 	// Custom
 	// ...
 )

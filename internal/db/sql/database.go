@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"app/internal/app/models"
 	"app/internal/config"
 	"app/internal/log"
 
@@ -52,7 +51,7 @@ func (c *Connection) InitSchema(ctx context.Context) error {
 	if _, err := tx.ExecContext(ctx, schema); err != nil {
 		log.S.Error(
 			"Database query has failed, performing rollback",
-            log.L().Tag(log.TagSqlQuery).Error(err),
+			log.L().Tag(log.TagSqlQuery).Error(err),
 		)
 		_ = tx.Rollback()
 		return err
@@ -70,7 +69,10 @@ func (c *Connection) GetBookById(
 ) (bool, error) {
 	var count []int
 	if err := c.db.SelectContext(ctx, &count, selectBookById, id); err != nil {
-		log.S.Error("Database query has failed", log.L().Tag(log.TagSqlQuery).Error(err))
+		log.S.Error(
+			"Database query has failed",
+			log.L().Tag(log.TagSqlQuery).Error(err),
+		)
 		return false, err
 	}
 	return count[0] != 0, nil
