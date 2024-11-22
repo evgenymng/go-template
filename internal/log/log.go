@@ -17,26 +17,26 @@ func (l *Logger) GetInternal() *zap.SugaredLogger {
 	return l.internal
 }
 
-// Creates a new [Logger] using the global configuration and level.
-func New(cfg config.LogConfig) *Logger {
+// Creates a new [Logger] using the global configuration.
+func New() *Logger {
 	encConf := zapcore.EncoderConfig{
-		MessageKey:    cfg.EncoderConfig.MessageKey,
-		LevelKey:      cfg.EncoderConfig.LevelKey,
-		TimeKey:       cfg.EncoderConfig.TimeKey,
-		NameKey:       cfg.EncoderConfig.NameKey,
-		CallerKey:     cfg.EncoderConfig.CallerKey,
-		FunctionKey:   cfg.EncoderConfig.FunctionKey,
-		StacktraceKey: cfg.EncoderConfig.StacktraceKey,
-		EncodeLevel:   cfg.EncoderConfig.LevelEncoder,
-		EncodeTime:    cfg.EncoderConfig.TimeEncoder,
+		MessageKey:    config.C.Log.EncoderConfig.MessageKey,
+		LevelKey:      config.C.Log.EncoderConfig.LevelKey,
+		TimeKey:       config.C.Log.EncoderConfig.TimeKey,
+		NameKey:       config.C.Log.EncoderConfig.NameKey,
+		CallerKey:     config.C.Log.EncoderConfig.CallerKey,
+		FunctionKey:   config.C.Log.EncoderConfig.FunctionKey,
+		StacktraceKey: config.C.Log.EncoderConfig.StacktraceKey,
+		EncodeLevel:   config.C.Log.EncoderConfig.LevelEncoder,
+		EncodeTime:    config.C.Log.EncoderConfig.TimeEncoder,
 	}
 
 	conf := zap.Config{
-		Level:            cfg.Level,
-		Encoding:         cfg.Encoding,
-		OutputPaths:      cfg.OutputPaths,
-		ErrorOutputPaths: cfg.ErrorOutputPaths,
-		Development:      cfg.ShowFileLine,
+		Level:            config.C.Log.Level,
+		Encoding:         config.C.Log.Encoding,
+		OutputPaths:      config.C.Log.OutputPaths,
+		ErrorOutputPaths: config.C.Log.ErrorOutputPaths,
+		Development:      config.C.Log.ShowFileLine,
 		EncoderConfig:    encConf,
 	}
 

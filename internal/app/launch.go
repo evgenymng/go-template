@@ -12,6 +12,7 @@ import (
 	"app/docs"
 	"app/internal/app/middleware"
 	"app/internal/app/routes"
+	"app/internal/config"
 	"app/internal/log"
 
 	"github.com/gin-contrib/pprof"
@@ -20,10 +21,8 @@ import (
 	ginswagger "github.com/swaggo/gin-swagger"
 )
 
-func (app *App) Launch() {
-	l := log.L()
-
-	gin.SetMode(app.config.Server.Mode)
+func Launch() {
+	gin.SetMode(config.C.Server.Mode)
 
 	// server will run using this context
 	ctx, cancel := signal.NotifyContext(
@@ -40,7 +39,7 @@ func (app *App) Launch() {
 		middleware.TraceIdMiddleware("X-Trace-ID"),
 		middleware.AccessLogMiddleware(),
 		middleware.ApiAuthMiddleware(
-			app.config.ApiKeys,
+			config.C.ApiKeys,
 			"Authorization",
 			[]string{
 				"^/ping$",
@@ -53,23 +52,23 @@ func (app *App) Launch() {
 	// register handlers
 	r.GET("/ping", routes.GetPing)
 
-	if app.config.EnablePprof {
+	if config.C.EnablePprof {
 		pprof.Register(r)
 	}
-	if app.config.EnableDocs {
-		docs.SwaggerInfo.Version = app.config.Version
+	if config.C.EnableDocs {
+		docs.SwaggerInfo.Version = config.C.Version
 		r.GET("/swagger/*any", ginswagger.WrapHandler(swaggerfiles.Handler))
 		r.GET("/docs", func(c *gin.Context) {
 			c.Redirect(http.StatusMovedPermanently, "/swagger/index.html")
 		})
-		log.S.Debug("Added /docs endpoint", l)
+		log.S.Debug("Added /docs endpoint", log.L())
 	}
 
 	// disable trusted proxy warning
 	if err := r.SetTrustedProxies(nil); err != nil {
 		log.S.Fatal(
 			"Failed to configure trusted proxies settings",
-			l.Error(err),
+			log.L().Error(err),
 		)
 	}
 
@@ -78,25 +77,24 @@ func (app *App) Launch() {
 		Handler: r,
 	}
 	// setting onShutdown logic
-	srv.RegisterOnShutdown(app.onShutdown)
+	srv.RegisterOnShutdown(onShutdown)
 
 	// create listener
 	listener, err := net.Listen("tcp", fmt.Sprintf(
 		"%s:%d",
-		app.config.Server.Host,
-		app.config.Server.Port,
+		config.C.Server.Host,
+		config.C.Server.Port,
 	))
 	defer func() {
 		_ = listener.Close()
 	}()
 
-	l = l.Tag(log.TagRunning)
 	if err != nil {
-		log.S.Fatal("Failed to create listener", l.Error(err))
+		log.S.Fatal("Failed to create listener", log.L().Error(err))
 	}
 
 	// perform startup logic
-	err = app.onStartup(ctx)
+	err = onStartup(ctx)
 
 	if err == nil {
 		// server runs in a goroutine
@@ -105,7 +103,7 @@ func (app *App) Launch() {
 				err != http.ErrServerClosed {
 				log.S.Fatal(
 					"An error occurred, cannot listen for requests anymore",
-					l.Error(err),
+					log.L().Error(err),
 				)
 			}
 		}()
@@ -113,25 +111,24 @@ func (app *App) Launch() {
 		// listen for the interrupt signal
 		<-ctx.Done()
 
-		l = l.Tag(log.TagShutdown)
-
 		// restore default behavior on the interrupt signal and notify user of shutdown
 		cancel()
 		log.S.Info(
 			"Shutting down gracefully, press Ctrl+C to force",
-			l,
+			log.L(),
 		)
 		ctx, cancel = context.WithTimeout(
 			context.Background(),
-			time.Duration(app.config.Server.ShutdownTimeout)*time.Second,
+			time.Duration(config.C.Server.ShutdownTimeout)*time.Second,
 		)
 		defer cancel()
 	}
+
 	// perform shutdown logic
 	if err := srv.Shutdown(ctx); err != nil {
 		log.S.Error(
 			"Server forced to shutdown",
-			l,
+			log.L(),
 		)
 	}
 }

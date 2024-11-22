@@ -1,4 +1,4 @@
-package database
+package sql
 
 import (
 	"context"
@@ -6,6 +6,7 @@ import (
 
 	"app/internal/config"
 	"app/internal/log"
+	"app/internal/model"
 
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
@@ -19,17 +20,17 @@ type Connection struct {
 }
 
 // Connects to the database using credentials provided in the config.
-func Connect(cfg config.Config) (c *Connection, err error) {
+func Connect() (c *Connection, err error) {
 	var db *sqlx.DB
 	if db, err = sqlx.Connect(
 		"postgres",
 		fmt.Sprintf(
-			"user=%s password=%s host=%s port=%d dbname=%s sslmode=disable",
-			cfg.Database.Username,
-			cfg.Database.Password,
-			cfg.Database.Host,
-			cfg.Database.Port,
-			cfg.Database.Name,
+			"user=%s password=%s host=%s port=%s dbname=%s sslmode=disable",
+			config.C.Database.Username,
+			config.C.Database.Password,
+			config.C.Database.Host,
+			config.C.Database.Port,
+			config.C.Database.Name,
 		),
 	); err != nil {
 		return
@@ -51,7 +52,7 @@ func (c *Connection) InitSchema(ctx context.Context) error {
 	if _, err := tx.ExecContext(ctx, schema); err != nil {
 		log.S.Error(
 			"Database query has failed, performing rollback",
-			log.L().Tag(log.TagSqlQuery).Error(err),
+			log.L().Error(err),
 		)
 		_ = tx.Rollback()
 		return err
@@ -66,16 +67,13 @@ func (c *Connection) InitSchema(ctx context.Context) error {
 func (c *Connection) GetBookById(
 	ctx context.Context,
 	id uuid.UUID,
-) (bool, error) {
-	var count []int
-	if err := c.db.SelectContext(ctx, &count, selectBookById, id); err != nil {
-		log.S.Error(
-			"Database query has failed",
-			log.L().Tag(log.TagSqlQuery).Error(err),
-		)
-		return false, err
+) (model.Book, error) {
+	var books []model.Book
+	if err := c.db.SelectContext(ctx, &books, selectBookById, id); err != nil {
+		log.S.Error("Database query has failed", log.L().Error(err))
+		return model.Book{}, err
 	}
-	return count[0] != 0, nil
+	return books[0], nil
 }
 
 // Closes database connection.

@@ -23,17 +23,17 @@ func main() {
 		)
 	}
 
-	cfg, err := config.Load(configFile)
+	var err error
+	config.C, err = config.Load(configFile)
 	if err != nil {
 		panic(fmt.Sprintf("Failed to load the config: %v", err))
 	}
 
-	log.S = log.New(cfg.Log)
+	log.S = log.New()
 	log.S.Info(
 		"Config is loaded, logger is initialized",
 		log.L(),
 	)
 
-	app := app.New(cfg)
 	app.Launch()
 }

@@ -7,6 +7,8 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+var C Config
+
 // Loads config from a file.
 func Load(configFile string) (Config, error) {
 	var cfg Config

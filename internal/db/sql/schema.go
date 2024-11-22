@@ -1,4 +1,4 @@
-package database
+package sql
 
 const schema = `
 CREATE TABLE IF NOT EXISTS book (
