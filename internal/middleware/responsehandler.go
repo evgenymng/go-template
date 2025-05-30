@@ -3,11 +3,11 @@ package middleware
 import (
 	"net/http"
 
-	"app/internal/app/ckey"
-	"app/internal/app/errors"
-	"app/internal/log"
+	"go-template/internal/errors"
+	"go-template/pkg/log"
 
 	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 )
 
 // Middleware to perform custom response-handling logic,
@@ -16,21 +16,17 @@ import (
 //
 // Use [gin.Context.Error] to register a new error during
 // the request processing.
-func ResponseHandler() gin.HandlerFunc {
+func ResponseHandler(traceIdKey string) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		traceId := c.GetString(string(ckey.TraceId))
+		traceId := c.GetString(traceIdKey)
 
 		c.Next()
 
-		l := log.L().
-			TraceId(traceId)
-
 		if len(c.Errors) > 0 {
 			err := c.Errors[0]
-			l = l.Error(err)
 
 			if err.Type == gin.ErrorTypeBind {
-				log.S.Error("Request parameter binding error", l)
+				log.S.Error("Request parameter binding error", zap.Error(err))
 				c.JSON(http.StatusUnprocessableEntity, errors.E().
 					Code(errors.CodeBadInput).
 					Message("Request parameter binding error").
@@ -42,19 +38,17 @@ func ResponseHandler() gin.HandlerFunc {
 			}
 
 			if serr, ok := err.Err.(*errors.ServiceError); ok {
-				log.S.Warn("Service error", l)
+				log.S.Warn("Service error", zap.Error(err))
 
 				// NOTE(evgenymng): switch by code here, if needed
 				switch serr.Code {
-				case errors.CodeUnauthorized:
-					c.JSON(http.StatusUnauthorized, serr)
 				default:
 					c.JSON(http.StatusInternalServerError, serr)
 				}
 				return
 			}
 
-			log.S.Error("Unexpected error", l)
+			log.S.Error("Unexpected error", zap.Error(err))
 			c.JSON(http.StatusInternalServerError, errors.E().
 				Code(errors.CodeUnexpected).
 				Message("Unexpected error").

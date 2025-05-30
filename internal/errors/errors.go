@@ -53,7 +53,7 @@ func (b ServiceErrorBuilder) Build() ServiceError {
 
 // Implement the [error] interface.
 func (e ServiceError) Error() string {
-	s := fmt.Sprintf("service error, code: %q", e.Code.String())
+	s := fmt.Sprintf("service error, code: %q", e.Code)
 	if e.Message != "" {
 		s += fmt.Sprintf(", message: %q", e.Message)
 	}

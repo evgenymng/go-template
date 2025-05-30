@@ -1,4 +1,4 @@
-package app
+package internal
 
 import (
 	"context"
@@ -7,22 +7,28 @@ import (
 	"net/http"
 	"os/signal"
 	"syscall"
-	"time"
 
-	"app/docs"
-	"app/internal/app/middleware"
-	"app/internal/app/routes"
-	"app/internal/config"
-	"app/internal/log"
+	"go-template/docs"
+	"go-template/internal/middleware"
+	"go-template/internal/routes"
+	"go-template/pkg/config"
+	"go-template/pkg/log"
 
 	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
-	swaggerfiles "github.com/swaggo/files"
-	ginswagger "github.com/swaggo/gin-swagger"
+	"go.uber.org/zap"
+
+	swaggofiles "github.com/swaggo/files"
+	swagger "github.com/swaggo/gin-swagger"
+)
+
+const (
+	traceIdKey    = "trace_id"
+	traceIdHeader = "X-Trace-ID"
 )
 
 func Launch() {
-	gin.SetMode(config.C.Server.Mode)
+	setMode()
 
 	// server will run using this context
 	ctx, cancel := signal.NotifyContext(
@@ -35,40 +41,32 @@ func Launch() {
 	// new gin server engine
 	r := gin.New()
 	r.Use(
-		middleware.ResponseHandler(),
-		middleware.TraceIdMiddleware("X-Trace-ID"),
+		middleware.ResponseHandler(traceIdKey),
+		middleware.TraceIdMiddleware(traceIdHeader, traceIdKey),
 		middleware.AccessLogMiddleware(),
-		middleware.ApiAuthMiddleware(
-			config.C.ApiKeys,
-			"Authorization",
-			[]string{
-				"^/ping$",
-				"^/swagger/.*$",
-				"^/docs$",
-				"^/debug/pprof/.*$",
-			}),
 	)
 
 	// register handlers
 	r.GET("/ping", routes.GetPing)
 
-	if config.C.EnablePprof {
+	if config.C.Debug {
+		// register pprof endpoints
 		pprof.Register(r)
-	}
-	if config.C.EnableDocs {
-		docs.SwaggerInfo.Version = config.C.Version
-		r.GET("/swagger/*any", ginswagger.WrapHandler(swaggerfiles.Handler))
+
+		// register swagger docs
+		docs.SwaggerInfo.Version = config.C.Release
+		r.GET("/swagger/*any", swagger.WrapHandler(swaggofiles.Handler))
 		r.GET("/docs", func(c *gin.Context) {
 			c.Redirect(http.StatusMovedPermanently, "/swagger/index.html")
 		})
-		log.S.Debug("Added /docs endpoint", log.L())
+		log.S.Debug("Added /docs endpoint")
 	}
 
 	// disable trusted proxy warning
 	if err := r.SetTrustedProxies(nil); err != nil {
 		log.S.Fatal(
 			"Failed to configure trusted proxies settings",
-			log.L().Error(err),
+			zap.Error(err),
 		)
 	}
 
@@ -90,7 +88,7 @@ func Launch() {
 	}()
 
 	if err != nil {
-		log.S.Fatal("Failed to create listener", log.L().Error(err))
+		log.S.Fatal("Failed to create listener", zap.Error(err))
 	}
 
 	// perform startup logic
@@ -103,7 +101,7 @@ func Launch() {
 				err != http.ErrServerClosed {
 				log.S.Fatal(
 					"An error occurred, cannot listen for requests anymore",
-					log.L().Error(err),
+					zap.Error(err),
 				)
 			}
 		}()
@@ -111,24 +109,37 @@ func Launch() {
 		// listen for the interrupt signal
 		<-ctx.Done()
 
-		// restore default behavior on the interrupt signal and notify user of shutdown
+		// restore default behavior of the interrupt signal and notify user
 		cancel()
-		log.S.Info(
-			"Shutting down gracefully, press Ctrl+C to force",
-			log.L(),
-		)
+		log.S.Info("Shutting down gracefully, press Ctrl+C to force")
 		ctx, cancel = context.WithTimeout(
 			context.Background(),
-			time.Duration(config.C.Server.ShutdownTimeout)*time.Second,
+			config.C.Server.ShutdownTimeout,
 		)
 		defer cancel()
 	}
 
 	// perform shutdown logic
 	if err := srv.Shutdown(ctx); err != nil {
-		log.S.Error(
-			"Server forced to shutdown",
-			log.L(),
-		)
+		log.S.Error("Server forced to shutdown")
 	}
+}
+
+func setMode() {
+	var mode string
+	if config.C.Debug {
+		mode = "debug"
+	} else {
+		mode = "release"
+	}
+	gin.SetMode(mode)
+}
+
+// Add all required onShutdown logic here.
+func onStartup(_ context.Context) error {
+	return nil
+}
+
+// Add all required onShutdown logic here.
+func onShutdown() {
 }
