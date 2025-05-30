@@ -12,7 +12,7 @@ var S *zap.SugaredLogger
 func NewLogger(cfg config.Config) *zap.SugaredLogger {
 	var conf zap.Config
 
-	if cfg.Debug {
+	if cfg.Dev {
 		conf = zap.NewDevelopmentConfig()
 		conf.Encoding = "console"
 	} else {

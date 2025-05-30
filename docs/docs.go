@@ -36,6 +36,28 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/version": {
+            "get": {
+                "consumes": [
+                    "text/plain"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "misc"
+                ],
+                "summary": "Returns the version of the service.",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
         }
     }
 }`
