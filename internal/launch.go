@@ -11,13 +11,13 @@ import (
 	"go-template/internal/server"
 	"go-template/pkg/config"
 	"go-template/pkg/execution"
+	"go-template/pkg/telemetry"
 
 	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
-	"go.uber.org/zap"
-
 	swaggofiles "github.com/swaggo/files"
 	swagger "github.com/swaggo/gin-swagger"
+	"go.uber.org/zap"
 )
 
 const (
@@ -64,30 +64,44 @@ func Launch() {
 			middleware.ResponseHandler(traceIdKey),
 			middleware.TraceIdMiddleware(traceIdHeader, traceIdKey),
 			middleware.AccessLogMiddleware(),
+			middleware.OtelAccessLogMiddleware(),
 		}
 
 		// unused main group
-		_ = r.Group("", mws...)
+		v1 := r.Group("", mws...)
+		{
+			v1.GET("/send-trace", routes.SendTrace)
+		}
 
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			err := onStartup(ctx)
+			shutdown, err := onStartup(ctx)
 			if err != nil {
 				zap.S().Fatalw("Failed to startup application", zap.Error(err))
 			}
 			server.Start(ctx, r, config.C.Server)
-			onShutdown(ctx)
+			err = shutdown(ctx)
+			if err != nil {
+				zap.S().Fatalw(
+					"Failed to shutdown the application",
+					zap.Error(err),
+				)
+			}
 		}()
 		zap.S().Info("Application started")
 	})
 }
 
-// Add all required onStartup logic here.
-func onStartup(_ context.Context) error {
-	return nil
-}
+// Add all required startup logic here.
+func onStartup(
+	ctx context.Context,
+) (shutdown func(context.Context) error, err error) {
+	shutdown, err = telemetry.Init(ctx)
+	if err != nil {
+		return
+	}
+	zap.S().Info("OpenTelemetry SDK initialized")
 
-// Add all required onShutdown logic here.
-func onShutdown(_ context.Context) {
+	return shutdown, nil
 }
