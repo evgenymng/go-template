@@ -2,3 +2,6 @@
 
 .env
 .env.back
+
+grafana/*
+!grafana/grafana.db

@@ -37,6 +37,28 @@ const docTemplate = `{
                 }
             }
         },
+        "/send-trace": {
+            "get": {
+                "consumes": [
+                    "text/plain"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "misc"
+                ],
+                "summary": "Send trace to the OpenTelemetry collector, as well as processing time.",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/version": {
             "get": {
                 "consumes": [

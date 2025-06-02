@@ -9,6 +9,7 @@ type Config struct {
 	Dev     bool         `env:"DEV"`
 	Log     LogConfig    `env:", prefix=LOG_"`
 	Server  ServerConfig `env:", prefix=SERVER_"`
+	Otel    OtelConfig   `env:", prefix=OTEL_"`
 }
 
 type ServerConfig struct {
@@ -18,4 +19,11 @@ type ServerConfig struct {
 
 type LogConfig struct {
 	Level zap.AtomicLevel `env:"LEVEL, default=info"`
+}
+
+type OtelConfig struct {
+	Host        string `env:"HOST, default=localhost"`
+	Port        uint16 `env:"PORT, default=4317"`
+	Secure      bool   `env:"SECURE, default=true"`
+	ServiceName string `env:"SERVICE_NAME, default=github.com/evgenymng/go-template"`
 }
