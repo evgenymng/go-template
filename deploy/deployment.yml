@@ -21,7 +21,7 @@ spec:
       containers:
         - name: crawler
           image: go-template:latest
-          imagePullPolicy: always
+          imagePullPolicy: Always
           command: ["/go-template/app"]
           envFrom:
             - configMapRef:
