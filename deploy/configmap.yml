@@ -3,4 +3,4 @@ kind: ConfigMap
 metadata:
   name: go-template-config
 data:
-  LOG_LEVEL: warning
+  LOG_LEVEL: warn
