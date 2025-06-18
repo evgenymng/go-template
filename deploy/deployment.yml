@@ -22,7 +22,7 @@ spec:
         - name: crawler
           image: go-template:latest
           imagePullPolicy: Always
-          command: ["/go-template/app"]
+          command: ["/app/cmd"]
           envFrom:
             - configMapRef:
                 name: go-template-config
