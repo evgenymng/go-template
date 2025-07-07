@@ -63,6 +63,16 @@ func init() {
 //
 //	@router		/send-metrics [get]
 func SendMetrics(c *gin.Context) {
+	_, span := tracer.Start(c, "SendMetrics")
+	defer span.End()
+
+	// Add span attributes
+	span.SetAttributes(
+		attribute.String("http.method", c.Request.Method),
+		attribute.String("http.route", "/send-metrics"),
+		attribute.String("operation.type", "metrics_demo"),
+	)
+
 	// increment request counter
 	requestCounter.Add(c.Request.Context(), 1, metric.WithAttributes(
 		attribute.String("method", c.Request.Method),

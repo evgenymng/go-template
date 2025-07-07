@@ -119,7 +119,7 @@ func newLoggerProvider(ctx context.Context) (*otlplog.LoggerProvider, error) {
 		opts = append(opts, otlploggrpc.WithInsecure())
 	}
 
-	logExporter, err := otlploggrpc.New(ctx)
+	logExporter, err := otlploggrpc.New(ctx, opts...)
 	if err != nil {
 		return nil, err
 	}
