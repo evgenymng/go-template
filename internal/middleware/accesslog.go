@@ -4,32 +4,32 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"go.uber.org/zap"
+	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 )
 
 // Middleware to log every incoming and processed request.
 func AccessLogMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		startTime := time.Now()
-		zap.S().Infow(
+
+		// use context-aware logging to correlate with traces
+		otelzap.Ctx(c).Sugar().Infow(
 			"Request",
-			"path",
-			c.Request.URL.Path,
-			"params",
-			c.Request.URL.Query(),
-			"host",
-			c.Request.URL.Hostname(),
+			"path", c.Request.URL.Path,
+			"params", c.Request.URL.Query(),
+			"client_ip", c.ClientIP(),
+			"user_agent", c.Request.UserAgent(),
 		)
 
 		c.Next()
 
 		status := c.Writer.Status()
-		zap.S().Infow(
+		otelzap.Ctx(c).Sugar().Infow(
 			"Response",
-			"status_code",
-			status,
-			"elapsed",
-			time.Since(startTime).Seconds(),
+			"status_code", status,
+			"client_ip", c.ClientIP(),
+			"user_agent", c.Request.UserAgent(),
+			"elapsed", time.Since(startTime).Seconds(),
 		)
 	}
 }

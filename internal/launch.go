@@ -72,6 +72,7 @@ func Launch() {
 		{
 			v1.GET("/send-trace", routes.SendTrace)
 			v1.GET("/send-metrics", routes.SendMetrics)
+			v1.GET("/send-logs", routes.SendLogs)
 		}
 
 		wg.Add(1)

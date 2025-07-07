@@ -3,6 +3,7 @@ package log
 import (
 	"go-template/pkg/config"
 
+	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 	"go.uber.org/zap"
 )
 
@@ -19,5 +20,8 @@ func Configure(cfg config.Config) {
 	conf.Level = cfg.Log.Level
 
 	logger := zap.Must(conf.Build())
-	zap.ReplaceGlobals(logger)
+
+	// wrap with OpenTelemetry integration
+	otelLogger := otelzap.New(logger)
+	otelzap.ReplaceGlobals(otelLogger)
 }

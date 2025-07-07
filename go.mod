@@ -28,6 +28,8 @@ require (
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.26.3 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
+	github.com/uptrace/opentelemetry-go-extra/otelutil v0.3.2 // indirect
+	github.com/uptrace/opentelemetry-go-extra/otelzap v0.3.2 // indirect
 	go.opentelemetry.io/auto/sdk v1.1.0 // indirect
 	go.opentelemetry.io/otel/metric v1.36.0 // indirect
 	go.opentelemetry.io/otel/trace v1.36.0 // indirect
