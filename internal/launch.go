@@ -71,6 +71,7 @@ func Launch() {
 		v1 := r.Group("", mws...)
 		{
 			v1.GET("/send-trace", routes.SendTrace)
+			v1.GET("/send-metrics", routes.SendMetrics)
 		}
 
 		wg.Add(1)
