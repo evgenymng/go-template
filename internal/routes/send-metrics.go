@@ -72,16 +72,24 @@ func SendMetrics(c *gin.Context) {
 
 	// record response time (simulate random duration)
 	responseTime := rand.Float64() * 2.0 // Random duration between 0-2 seconds
-	responseHistogram.Record(c.Request.Context(), responseTime, metric.WithAttributes(
-		attribute.String("method", c.Request.Method),
-		attribute.String("endpoint", "/send-metrics"),
-	))
+	responseHistogram.Record(
+		c.Request.Context(),
+		responseTime,
+		metric.WithAttributes(
+			attribute.String("method", c.Request.Method),
+			attribute.String("endpoint", "/send-metrics"),
+		),
+	)
 
 	// simulate active connections change
 	connectionChange := rand.Intn(10) - 5 // Random change between -5 to +4
-	activeConnections.Add(c.Request.Context(), int64(connectionChange), metric.WithAttributes(
-		attribute.String("service", "go-template"),
-	))
+	activeConnections.Add(
+		c.Request.Context(),
+		int64(connectionChange),
+		metric.WithAttributes(
+			attribute.String("service", "go-template"),
+		),
+	)
 
 	c.JSON(200, gin.H{
 		"message": "Metrics sent successfully!",
