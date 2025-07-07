@@ -3,16 +3,15 @@ package middleware
 import (
 	"time"
 
-	"go-template/pkg/log"
-
 	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 )
 
 // Middleware to log every incoming and processed request.
 func AccessLogMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		startTime := time.Now()
-		log.S.Infow(
+		zap.S().Infow(
 			"Request",
 			"path",
 			c.Request.URL.Path,
@@ -25,7 +24,7 @@ func AccessLogMiddleware() gin.HandlerFunc {
 		c.Next()
 
 		status := c.Writer.Status()
-		log.S.Infow(
+		zap.S().Infow(
 			"Response",
 			"status_code",
 			status,

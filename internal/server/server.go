@@ -6,15 +6,15 @@ import (
 	"net/http"
 
 	"go-template/pkg/config"
-	"go-template/pkg/log"
 
 	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 )
 
 func Start(ctx context.Context, r *gin.Engine, cfg config.ServerConfig) {
 	// disable trusted proxy warning
 	if err := r.SetTrustedProxies(nil); err != nil {
-		log.S.Fatal(
+		zap.S().Fatal(
 			"Failed to configure trusted proxies settings",
 		)
 	}
@@ -29,7 +29,7 @@ func Start(ctx context.Context, r *gin.Engine, cfg config.ServerConfig) {
 		),
 	}
 
-	log.S.Info(fmt.Sprintf(
+	zap.S().Info(fmt.Sprintf(
 		"Server is listening on %s:%d",
 		cfg.Host,
 		cfg.Port,
@@ -39,11 +39,11 @@ func Start(ctx context.Context, r *gin.Engine, cfg config.ServerConfig) {
 		<-ctx.Done()
 
 		if err := srv.Shutdown(context.Background()); err != nil {
-			log.S.Fatal(
+			zap.S().Fatal(
 				"Failed to stop the server",
 			)
 		} else {
-			log.S.Info(
+			zap.S().Info(
 				"Server is stopped",
 			)
 		}
@@ -52,7 +52,7 @@ func Start(ctx context.Context, r *gin.Engine, cfg config.ServerConfig) {
 	// server runs in a goroutine
 	if err := srv.ListenAndServe(); err != nil &&
 		err != http.ErrServerClosed {
-		log.S.Fatal(
+		zap.S().Fatal(
 			"An error occurred, cannot listen for requests anymore",
 		)
 	}

@@ -11,7 +11,6 @@ import (
 	"go-template/internal/server"
 	"go-template/pkg/config"
 	"go-template/pkg/execution"
-	"go-template/pkg/log"
 
 	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
@@ -26,6 +25,7 @@ const (
 	traceIdHeader = "X-Trace-ID"
 )
 
+// Launch the service.
 func Launch() {
 	execution.Launch(func(ctx context.Context, wg *sync.WaitGroup) {
 		if config.C.Dev {
@@ -74,12 +74,12 @@ func Launch() {
 			defer wg.Done()
 			err := onStartup(ctx)
 			if err != nil {
-				log.S.Fatalw("Failed to startup application", zap.Error(err))
+				zap.S().Fatalw("Failed to startup application", zap.Error(err))
 			}
 			server.Start(ctx, r, config.C.Server)
 			onShutdown(ctx)
 		}()
-		log.S.Info("Application started")
+		zap.S().Info("Application started")
 	})
 }
 

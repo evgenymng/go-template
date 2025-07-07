@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"go-template/internal/errors"
-	"go-template/pkg/log"
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
@@ -26,7 +25,7 @@ func ResponseHandler(traceIdKey string) gin.HandlerFunc {
 			err := c.Errors[0]
 
 			if err.Type == gin.ErrorTypeBind {
-				log.S.Error("Request parameter binding error", zap.Error(err))
+				zap.S().Error("Request parameter binding error", zap.Error(err))
 				c.JSON(http.StatusUnprocessableEntity, errors.E().
 					Code(errors.CodeBadInput).
 					Message("Request parameter binding error").
@@ -38,7 +37,7 @@ func ResponseHandler(traceIdKey string) gin.HandlerFunc {
 			}
 
 			if serr, ok := err.Err.(*errors.ServiceError); ok {
-				log.S.Warn("Service error", zap.Error(err))
+				zap.S().Warn("Service error", zap.Error(err))
 
 				// NOTE(evgenymng): switch by code here, if needed
 				switch serr.Code {
@@ -48,7 +47,7 @@ func ResponseHandler(traceIdKey string) gin.HandlerFunc {
 				return
 			}
 
-			log.S.Error("Unexpected error", zap.Error(err))
+			zap.S().Error("Unexpected error", zap.Error(err))
 			c.JSON(http.StatusInternalServerError, errors.E().
 				Code(errors.CodeUnexpected).
 				Message("Unexpected error").

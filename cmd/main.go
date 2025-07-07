@@ -6,6 +6,7 @@ import (
 	"go-template/pkg/log"
 
 	"github.com/joho/godotenv"
+	"go.uber.org/zap"
 )
 
 // @title Backend Service Template
@@ -16,8 +17,8 @@ func main() {
 	config.Load(&cfg)
 	config.C = cfg
 
-	log.S = log.NewLogger(config.C)
-	log.S.Info("Config is loaded, logger is initialized")
+	log.Configure(config.C)
+	zap.S().Info("Config is loaded, logger is initialized")
 
 	internal.Launch()
 }

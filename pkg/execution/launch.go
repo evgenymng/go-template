@@ -7,7 +7,7 @@ import (
 	"syscall"
 	"time"
 
-	"go-template/pkg/log"
+	"go.uber.org/zap"
 )
 
 func Launch(f func(context.Context, *sync.WaitGroup)) {
@@ -19,7 +19,7 @@ func Launch(f func(context.Context, *sync.WaitGroup)) {
 	defer cancel()
 	defer func() {
 		// make sure all pending messages are flushed before exiting
-		_ = log.S.Sync()
+		_ = zap.S().Sync()
 	}()
 
 	wg := sync.WaitGroup{}
@@ -27,7 +27,7 @@ func Launch(f func(context.Context, *sync.WaitGroup)) {
 	go f(ctx, &wg)
 
 	<-ctx.Done() // wait for the termination signal
-	log.S.Info(
+	zap.S().Info(
 		"Shutting down gracefully, Ctrl+C to force.",
 	)
 
@@ -54,15 +54,15 @@ func Launch(f func(context.Context, *sync.WaitGroup)) {
 
 	select {
 	case <-done:
-		log.S.Info(
+		zap.S().Info(
 			"All work is done, shutting down",
 		)
 	case <-forceCtx.Done():
-		log.S.Info(
+		zap.S().Info(
 			"Server is shutdown forcefully",
 		)
 	case <-shutdownCtx.Done():
-		log.S.Info(
+		zap.S().Info(
 			"Shutdown timeout exceeded, forceful shutdown",
 		)
 	}

@@ -6,10 +6,8 @@ import (
 	"go.uber.org/zap"
 )
 
-var S *zap.SugaredLogger
-
-// Creates a new logger instance from the configuration.
-func NewLogger(cfg config.Config) *zap.SugaredLogger {
+// Creates a new logger instance from the configuration and replaces the global logger.
+func Configure(cfg config.Config) {
 	var conf zap.Config
 
 	if cfg.Dev {
@@ -20,5 +18,6 @@ func NewLogger(cfg config.Config) *zap.SugaredLogger {
 	}
 	conf.Level = cfg.Log.Level
 
-	return zap.Must(conf.Build()).Sugar()
+	logger := zap.Must(conf.Build())
+	zap.ReplaceGlobals(logger)
 }
