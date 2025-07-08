@@ -5,6 +5,7 @@ import (
 
 	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 // Creates a new logger instance from the configuration and replaces the global logger.
@@ -22,6 +23,6 @@ func Configure(cfg config.Config) {
 	logger := zap.Must(conf.Build())
 
 	// wrap with OpenTelemetry integration
-	otelLogger := otelzap.New(logger)
+	otelLogger := otelzap.New(logger, otelzap.WithMinLevel(zapcore.DebugLevel))
 	otelzap.ReplaceGlobals(otelLogger)
 }
