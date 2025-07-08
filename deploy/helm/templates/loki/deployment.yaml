@@ -32,6 +32,12 @@ spec:
           volumeMounts:
             - name: loki-data
               mountPath: /loki
+            - name: rules
+              mountPath: /loki/rules
+            - name: tsdb
+              mountPath: /tmp/loki
+            - name: wal
+              mountPath: /loki/wal
           {{- end }}
           resources:
             {{- toYaml .Values.loki.resources | nindent 12 }}
@@ -40,5 +46,11 @@ spec:
         - name: loki-data
           persistentVolumeClaim:
             claimName: {{ include "go-template.fullname" . }}-loki-data
+        - name: rules
+          emptyDir: {}
+        - name: tsdb
+          emptyDir: {}
+        - name: wal
+          emptyDir: {}
       {{- end }}
 {{- end }}
