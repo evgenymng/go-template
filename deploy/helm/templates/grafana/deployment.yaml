@@ -44,4 +44,8 @@ spec:
           persistentVolumeClaim:
             claimName: {{ include "go-template.fullname" . }}-grafana-data
       {{- end }}
+      {{- if .Values.grafana.nodePool }}
+      nodeSelector:
+        node_pool: {{ .Values.grafana.nodePool }}
+      {{- end }}
 {{- end }}

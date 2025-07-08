@@ -30,12 +30,14 @@ spec:
               protocol: TCP
           {{- if .Values.loki.persistence.enabled }}
           volumeMounts:
-            - name: loki-data
-              mountPath: /loki
+            - name: chunks
+              mountPath: /loki/chunks
             - name: rules
               mountPath: /loki/rules
-            - name: tsdb
-              mountPath: /tmp/loki
+            - name: tsdb-shipper-active
+              mountPath: /loki/tsdb-shipper-active
+            - name: tsdb-shipper-cache
+              mountPath: /loki/tsdb-shipper-cache
             - name: wal
               mountPath: /loki/wal
           {{- end }}
@@ -43,14 +45,20 @@ spec:
             {{- toYaml .Values.loki.resources | nindent 12 }}
       {{- if .Values.loki.persistence.enabled }}
       volumes:
-        - name: loki-data
+        - name: chunks
           persistentVolumeClaim:
-            claimName: {{ include "go-template.fullname" . }}-loki-data
+            claimName: {{ include "go-template.fullname" . }}-loki-chunks
         - name: rules
           emptyDir: {}
-        - name: tsdb
+        - name: tsdb-shipper-active
+          emptyDir: {}
+        - name: tsdb-shipper-cache
           emptyDir: {}
         - name: wal
           emptyDir: {}
+      {{- end }}
+      {{- if .Values.loki.nodePool }}
+      nodeSelector:
+        node_pool: {{ .Values.loki.nodePool }}
       {{- end }}
 {{- end }}

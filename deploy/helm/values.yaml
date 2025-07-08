@@ -24,6 +24,8 @@ goTemplate:
     logLevel: warn
     serverPort: "80"
 
+  nodePool: ""
+
 otelCollector:
   enabled: true
   image:
@@ -45,6 +47,8 @@ otelCollector:
       cpu: 500m
       memory: 512Mi
 
+  nodePool: ""
+
 prometheus:
   enabled: true
   image:
@@ -65,6 +69,8 @@ prometheus:
     limits:
       cpu: 500m
       memory: 1Gi
+
+  nodePool: ""
 
 loki:
   enabled: true
@@ -91,6 +97,8 @@ loki:
     enabled: true
     size: 10Gi
     storageClass: ""
+
+  nodePool: ""
 
 grafana:
   enabled: true
@@ -120,3 +128,5 @@ grafana:
 
   adminUser: admin
   adminPassword: admin
+
+  nodePool: ""

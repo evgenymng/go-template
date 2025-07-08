@@ -35,4 +35,8 @@ spec:
         - name: config
           configMap:
             name: {{ include "go-template.fullname" . }}-prometheus-config
+      {{- if .Values.prometheus.nodePool }}
+      nodeSelector:
+        node_pool: {{ .Values.prometheus.nodePool }}
+      {{- end }}
 {{- end }}

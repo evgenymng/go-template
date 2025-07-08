@@ -39,4 +39,8 @@ spec:
         - name: config
           configMap:
             name: {{ include "go-template.fullname" . }}-otel-collector-config
+      {{- if .Values.otelCollector.nodePool }}
+      nodeSelector:
+        node_pool: {{ .Values.otelCollector.nodePool }}
+      {{- end }}
 {{- end }}
