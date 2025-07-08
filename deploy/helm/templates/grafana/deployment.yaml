@@ -1,0 +1,47 @@
+{{- if .Values.grafana.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "go-template.fullname" . }}-grafana
+  labels:
+    {{- include "go-template.labels" . | nindent 4 }}
+    app.kubernetes.io/component: grafana
+spec:
+  replicas: {{ .Values.grafana.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "go-template.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: grafana
+  template:
+    metadata:
+      labels:
+        {{- include "go-template.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: grafana
+    spec:
+      containers:
+        - name: grafana
+          image: "{{ .Values.grafana.image.repository }}:{{ .Values.grafana.image.tag }}"
+          imagePullPolicy: {{ .Values.grafana.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+          env:
+            - name: GF_SECURITY_ADMIN_USER
+              value: {{ .Values.grafana.adminUser }}
+            - name: GF_SECURITY_ADMIN_PASSWORD
+              value: {{ .Values.grafana.adminPassword }}
+          {{- if .Values.grafana.persistence.enabled }}
+          volumeMounts:
+            - name: grafana-data
+              mountPath: /var/lib/grafana
+          {{- end }}
+          resources:
+            {{- toYaml .Values.grafana.resources | nindent 12 }}
+      {{- if .Values.grafana.persistence.enabled }}
+      volumes:
+        - name: grafana-data
+          persistentVolumeClaim:
+            claimName: {{ include "go-template.fullname" . }}-grafana-data
+      {{- end }}
+{{- end }}

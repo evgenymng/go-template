@@ -1,7 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: go-template-config
-data:
-  LOG_LEVEL: warn
-  SERVER_PORT: "80"

@@ -1,9 +1,9 @@
-/tmp
+/tmp/
 
 .env
 .env.back
 
-grafana/*
-!grafana/grafana.db
+/grafana/*
+!/grafana/grafana.db
 
-loki/
+/loki/

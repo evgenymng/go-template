@@ -1,0 +1,44 @@
+{{- if .Values.loki.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "go-template.fullname" . }}-loki
+  labels:
+    {{- include "go-template.labels" . | nindent 4 }}
+    app.kubernetes.io/component: loki
+spec:
+  replicas: {{ .Values.loki.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "go-template.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: loki
+  template:
+    metadata:
+      labels:
+        {{- include "go-template.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: loki
+    spec:
+      containers:
+        - name: loki
+          image: "{{ .Values.loki.image.repository }}:{{ .Values.loki.image.tag }}"
+          imagePullPolicy: {{ .Values.loki.image.pullPolicy }}
+          args:
+            - -config.file=/etc/loki/local-config.yaml
+          ports:
+            - name: http
+              containerPort: 3100
+              protocol: TCP
+          {{- if .Values.loki.persistence.enabled }}
+          volumeMounts:
+            - name: loki-data
+              mountPath: /loki
+          {{- end }}
+          resources:
+            {{- toYaml .Values.loki.resources | nindent 12 }}
+      {{- if .Values.loki.persistence.enabled }}
+      volumes:
+        - name: loki-data
+          persistentVolumeClaim:
+            claimName: {{ include "go-template.fullname" . }}-loki-data
+      {{- end }}
+{{- end }}
