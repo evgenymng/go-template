@@ -42,3 +42,7 @@ spec:
               port: {{ .Values.goTemplate.config.serverPort }}
             periodSeconds: 10
             initialDelaySeconds: 20
+      {{- if .Values.goTemplate.nodePool }}
+      nodeSelector:
+        node_pool: {{ .Values.goTemplate.nodePool }}
+      {{- end }}
