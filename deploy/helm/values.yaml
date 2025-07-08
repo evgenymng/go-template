@@ -1,0 +1,25 @@
+goTemplate:
+  image:
+    repository: go-template
+    tag: latest
+    pullPolicy: Always
+
+  replicaCount: 1
+
+  service:
+    type: LoadBalancer
+    port: 80
+    annotations:
+      networking.gke.io/load-balancer-type: Internal
+
+  resources:
+    requests:
+      cpu: 1000m
+      memory: 1Gi
+    limits:
+      cpu: 2000m
+      memory: 2Gi
+
+  config:
+    logLevel: warn
+    serverPort: "80"

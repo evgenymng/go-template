@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "go-template.fullname" . }}
+  labels:
+    {{- include "go-template.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.goTemplate.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "go-template.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "go-template.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: service
+          image: "{{ .Values.goTemplate.image.repository }}:{{ .Values.goTemplate.image.tag }}"
+          imagePullPolicy: {{ .Values.goTemplate.image.pullPolicy }}
+          command: ["/app/cmd"]
+          envFrom:
+            - configMapRef:
+                name: {{ include "go-template.fullname" . }}-config
+          ports:
+            - name: http-api
+              containerPort: {{ .Values.goTemplate.config.serverPort }}
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.goTemplate.resources | nindent 12 }}
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /ping
+              port: {{ .Values.goTemplate.config.serverPort }}
+            periodSeconds: 10
+            initialDelaySeconds: 5
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /ping
+              port: {{ .Values.goTemplate.config.serverPort }}
+            periodSeconds: 10
+            initialDelaySeconds: 20
