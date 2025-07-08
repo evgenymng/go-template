@@ -1,4 +1,5 @@
 goTemplate:
+  enabled: true
   image:
     repository: go-template
     tag: latest

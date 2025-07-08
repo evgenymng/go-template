@@ -1,9 +1,12 @@
+{{- if .Values.goTemplate.enabled }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ include "go-template.fullname" . }}-config
   labels:
     {{- include "go-template.labels" . | nindent 4 }}
+    app.kubernetes.io/component: go-template
 data:
   LOG_LEVEL: {{ .Values.goTemplate.config.logLevel }}
   SERVER_PORT: {{ .Values.goTemplate.config.serverPort | quote }}
+{{- end }}
