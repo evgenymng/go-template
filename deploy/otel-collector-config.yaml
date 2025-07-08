@@ -8,9 +8,11 @@ processors:
   batch:
 
 exporters:
-  prometheus:
+  prometheus: # Pull model
     endpoint: 0.0.0.0:8889
-  debug: # Required for traces/logs (or use another exporter like otlphttp)
+  loki: # Push model
+    endpoint: http://loki:3100/loki/api/v1/push
+  debug: # Required for traces (or use another exporter like otlphttp)
 
 service:
   pipelines:
@@ -25,4 +27,4 @@ service:
     logs:
       receivers: [otlp]
       processors: [batch]
-      exporters: [debug] # Or your log backend (e.g., loki, elasticsearch)
+      exporters: [loki]

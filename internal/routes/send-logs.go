@@ -45,7 +45,7 @@ func SendLogs(c *gin.Context) {
 	otelzap.Ctx(ctx).Info("Info level log entry")
 
 	// Structured logging
-	otelzap.Ctx(ctx).Sugar().Warnw(
+	otelzap.S().Ctx(ctx).Warnw(
 		"Warning level log entry",
 		"warning_type", "rate_limit_approaching",
 		"current_usage", 85,
@@ -54,7 +54,7 @@ func SendLogs(c *gin.Context) {
 
 	// Simulate an error scenario
 	simulatedError := errors.New("simulated error for demonstration")
-	otelzap.Ctx(ctx).Sugar().Errorw(
+	otelzap.S().Ctx(ctx).Errorw(
 		"Error level log entry",
 		"error", simulatedError,
 	)

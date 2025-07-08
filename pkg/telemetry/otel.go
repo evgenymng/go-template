@@ -107,6 +107,10 @@ func newMeterProvider(ctx context.Context) (*metric.MeterProvider, error) {
 
 	meterProvider := metric.NewMeterProvider(
 		metric.WithReader(metric.NewPeriodicReader(metricExporter)),
+		metric.WithResource(resource.NewWithAttributes(
+			semconv.SchemaURL,
+			semconv.ServiceName(config.C.Otel.ServiceName),
+		)),
 	)
 	return meterProvider, nil
 }
@@ -126,6 +130,10 @@ func newLoggerProvider(ctx context.Context) (*otlplog.LoggerProvider, error) {
 
 	loggerProvider := otlplog.NewLoggerProvider(
 		otlplog.WithProcessor(otlplog.NewBatchProcessor(logExporter)),
+		otlplog.WithResource(resource.NewWithAttributes(
+			semconv.SchemaURL,
+			semconv.ServiceName(config.C.Otel.ServiceName),
+		)),
 	)
 	return loggerProvider, nil
 }

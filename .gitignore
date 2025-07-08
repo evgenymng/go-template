@@ -5,3 +5,5 @@
 
 grafana/*
 !grafana/grafana.db
+
+loki/
