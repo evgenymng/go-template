@@ -21,9 +21,10 @@ goTemplate:
       cpu: 2000m
       memory: 2Gi
 
-  config:
-    logLevel: warn
-    serverPort: "80"
+  env:
+    LOG_LEVEL: info
+    SERVER_PORT: "80"
+    OTEL_HOST: 10.2.34.227
 
   nodePool: ""
 

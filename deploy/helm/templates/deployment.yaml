@@ -28,7 +28,7 @@ spec:
                 name: {{ include "go-template.fullname" . }}-config
           ports:
             - name: http-api
-              containerPort: {{ .Values.goTemplate.config.serverPort }}
+              containerPort: 80
               protocol: TCP
           resources:
             {{- toYaml .Values.goTemplate.resources | nindent 12 }}
@@ -36,14 +36,14 @@ spec:
             failureThreshold: 3
             httpGet:
               path: /ping
-              port: {{ .Values.goTemplate.config.serverPort }}
+              port: 80
             periodSeconds: 10
             initialDelaySeconds: 5
           livenessProbe:
             failureThreshold: 3
             httpGet:
               path: /ping
-              port: {{ .Values.goTemplate.config.serverPort }}
+              port: 80
             periodSeconds: 10
             initialDelaySeconds: 20
       {{- if .Values.goTemplate.nodePool }}

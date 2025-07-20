@@ -7,6 +7,7 @@ metadata:
     {{- include "go-template.labels" . | nindent 4 }}
     app.kubernetes.io/component: go-template
 data:
-  LOG_LEVEL: {{ .Values.goTemplate.config.logLevel }}
-  SERVER_PORT: {{ .Values.goTemplate.config.serverPort | quote }}
+  {{- range $key, $val := .Values.goTemplate.env }}
+    {{ $key }}: {{ $val | quote }}
+  {{- end }}
 {{- end }}
