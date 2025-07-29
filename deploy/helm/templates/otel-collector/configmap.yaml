@@ -22,6 +22,10 @@ data:
         endpoint: 0.0.0.0:8889
       loki:
         endpoint: http://{{ include "go-template.fullname" . }}-loki:3100/loki/api/v1/push
+      jaeger:
+        endpoint: {{ include "go-template.fullname" . }}-jaeger:14250
+        tls:
+          insecure: true
       debug:
 
     service:
@@ -33,7 +37,7 @@ data:
         traces:
           receivers: [otlp]
           processors: [batch]
-          exporters: [debug]
+          exporters: [jaeger]
         logs:
           receivers: [otlp]
           processors: [batch]

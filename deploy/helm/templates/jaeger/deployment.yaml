@@ -1,0 +1,44 @@
+{{- if .Values.jaeger.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "go-template.fullname" . }}-jaeger
+  labels:
+    {{- include "go-template.labels" . | nindent 4 }}
+    app.kubernetes.io/component: jaeger
+spec:
+  replicas: {{ .Values.jaeger.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "go-template.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: jaeger
+  template:
+    metadata:
+      labels:
+        {{- include "go-template.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: jaeger
+    spec:
+      containers:
+        - name: jaeger
+          image: "{{ .Values.jaeger.image.repository }}:{{ .Values.jaeger.image.tag }}"
+          imagePullPolicy: {{ .Values.jaeger.image.pullPolicy }}
+          ports:
+            - name: jaeger-grpc
+              containerPort: 14250
+              protocol: TCP
+            - name: jaeger-http
+              containerPort: 14268
+              protocol: TCP
+            - name: jaeger-ui
+              containerPort: 16686
+              protocol: TCP
+          env:
+            - name: COLLECTOR_OTLP_ENABLED
+              value: "true"
+          resources:
+            {{- toYaml .Values.jaeger.resources | nindent 12 }}
+      {{- if .Values.jaeger.nodePool }}
+      nodeSelector:
+        node_pool: {{ .Values.jaeger.nodePool }}
+      {{- end }}
+{{- end }}
