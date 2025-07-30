@@ -30,6 +30,14 @@ services:
     volumes:
       - ../loki:/loki
 
+  jaeger:
+    image: jaegertracing/all-in-one:1.71.0
+    container_name: jaeger-${COMPOSE_PROJECT_NAME}
+    ports:
+      - "16686:16686" # Jaeger UI
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+
   grafana:
     image: grafana/grafana:12.0.1
     container_name: grafana-${COMPOSE_PROJECT_NAME}
@@ -41,6 +49,7 @@ services:
     depends_on:
       - prometheus
       - loki
+      - jaeger
     volumes:
       - ../grafana:/var/lib/grafana
 

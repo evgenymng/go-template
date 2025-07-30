@@ -12,7 +12,11 @@ exporters:
     endpoint: 0.0.0.0:8889
   loki: # Push model
     endpoint: http://loki:3100/loki/api/v1/push
-  debug: # Required for traces (or use another exporter like otlphttp)
+  otlp/jaeger: # Push model
+    endpoint: jaeger:14250
+    tls:
+      insecure: true
+  debug:
 
 service:
   pipelines:
@@ -23,7 +27,7 @@ service:
     traces:
       receivers: [otlp]
       processors: [batch]
-      exporters: [debug] # Or your trace backend (e.g., otlphttp, jaeger)
+      exporters: [otlp/jaeger]
     logs:
       receivers: [otlp]
       processors: [batch]
